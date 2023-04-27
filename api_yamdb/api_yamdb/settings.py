@@ -22,6 +22,10 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "rest_framework",
+    'rest_framework_simplejwt',
+
+    "api",
     "reviews",
 ]
 
@@ -98,9 +102,22 @@ USE_L10N = True
 
 USE_TZ = True
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
 
 # Static files (CSS, JavaScript, Images)
 
 STATIC_URL = "/static/"
 
+
 STATICFILES_DIRS = ((BASE_DIR / "static/"),)
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'XXXXXX'
+EMAIL_HOST_PASSWORD = 'XXXXXX'
+EMAIL_PORT = 587
