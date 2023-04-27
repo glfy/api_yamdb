@@ -4,10 +4,13 @@ from django.db import models
 
 
 class User(AbstractUser):
+    ADMIN = 'admin'
+    MODERATOR = 'moderator'
+    USER = "user"
     ROLES = [
-        ("admin", "Administrator"),
-        ("moderator", "Moderator"),
-        ("user", "User"),
+        (ADMIN, "Administrator"),
+        (MODERATOR, "Moderator"),
+        (USER, "User"),
     ]
     first_name = models.CharField(max_length=150, null=True)
     last_name = models.CharField(max_length=150, null=True)
@@ -31,6 +34,14 @@ class User(AbstractUser):
         choices=ROLES,
         default="user",
     )
+
+    @property
+    def is_moderator(self):
+        return self.role == self.MODERATOR
+
+    @property
+    def is_admin(self):
+        return self.role == self.ADMIN
 
     class Meta:
         verbose_name = "Пользователи"
@@ -66,6 +77,11 @@ class Title(models.Model):
     category = models.ForeignKey(
         Category, on_delete=models.CASCADE, related_name="categories"
     )
+    rating = models.IntegerField(
+        verbose_name='Рейтинг',
+        null=True,
+        default=None
+    )
 
     class Meta:
         verbose_name = "Заголовок"
@@ -83,11 +99,15 @@ class Review(models.Model):
     pub_date = models.DateTimeField(
         auto_now_add=True, verbose_name="Дата публикации отзыва"
     )
-    rate = models.IntegerField()
-
+    score = models.IntegerField(
+        verbose_name='Рейтинг',
+        validators=[
+            MinValueValidator(1, 'Допустимы значения от 1 до 10'),
+            MaxValueValidator(10, 'Допустимы значения от 1 до 10')
+        ])
     title = models.ForeignKey(
         Title,
-        on_delete=models.PROTECT,
+        on_delete=models.CASCADE,
         related_name="reviews",
         verbose_name="Название произведения",
         blank=True,
@@ -97,8 +117,12 @@ class Review(models.Model):
     class Meta:
         verbose_name = "Отзыв"
         verbose_name_plural = "Отзывы"
-        # constraints = [
-        #  models.UniqueConstraint
+        constraints = [
+            models.UniqueConstraint(
+                fields=['author', 'title'],
+                name='unique follow',
+            )
+        ]
         ordering = ("-pub_date",)
 
 
