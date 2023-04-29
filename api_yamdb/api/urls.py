@@ -6,6 +6,7 @@ from django.urls import include, path
 
 from .views import (
     APISignUp,
+    APIGetToken,
     GenreViewSet,
     CategoryViewSet,
     TitleViewSet,
@@ -31,6 +32,6 @@ router_v1.register(
 
 urlpatterns = [
     path('v1/auth/signup/', APISignUp.as_view(), name='signup'),
-    # path('v1/auth/token/', APIGetToken.as_view(), name='get_token'),
+    path('v1/auth/token/', APIGetToken.as_view(), name='get_token'),
     path("v1/", include(router_v1.urls))
 ]
