@@ -24,6 +24,7 @@ class GenreViewSet(viewsets.ModelViewSet):
     search_fields = [
         "name",
     ]
+    lookup_field = 'slug'
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
@@ -35,6 +36,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
     search_fields = [
         "name",
     ]
+    lookup_field = 'slug'
 
 
 class TitleViewSet(viewsets.ModelViewSet):
