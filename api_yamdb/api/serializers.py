@@ -1,7 +1,4 @@
 from rest_framework import serializers
-
-class UsersSerializer(serializers.ModelSerializer):
-
 from rest_framework.validators import UniqueValidator
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import get_object_or_404
@@ -54,6 +51,7 @@ class GetTokenSerializer(serializers.ModelSerializer):
         fields = (
             'username',
             'confirmation_code'
+        )
 
 
 class UserSerializer(serializers.ModelSerializer):
