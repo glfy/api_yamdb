@@ -1,8 +1,15 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.dispatch import receiver
+from django.contrib.auth.tokens import default_token_generator
+from django.db.models.signals import post_save
 
 
 class User(AbstractUser):
+    USER = 'user'
+    ADMIN = 'admin'
+    MODERATOR = 'moderator'
+
     ROLES = [
         ("admin", "Administrator"),
         ("moderator", "Moderator"),
@@ -30,6 +37,18 @@ class User(AbstractUser):
         choices=ROLES,
         default="user",
     )
+
+    @property
+    def is_user(self):
+        return self.role == self.USER
+
+    @property
+    def is_admin(self):
+        return self.role == self.ADMIN
+
+    @property
+    def is_moderator(self):
+        return self.role == self.MODERATOR
 
     class Meta:
         verbose_name = "Пользователи"
