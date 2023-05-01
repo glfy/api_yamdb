@@ -15,6 +15,8 @@ from .views import (
     CommentViewSet,
 )
 
+app_name = 'api'
+
 
 router_v1 = DefaultRouter()
 router_v1.register(r"genres", GenreViewSet, basename="genres")

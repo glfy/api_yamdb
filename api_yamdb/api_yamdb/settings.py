@@ -27,6 +27,8 @@ INSTALLED_APPS = [
 
     "api",
     "reviews",
+    "django_filters",
+    "api",
 ]
 
 MIDDLEWARE = [
@@ -60,6 +62,11 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "api_yamdb.wsgi.application"
 
+REST_FRAMEWORK = {
+    "DEFAULT_FILTER_BACKENDS": [
+        "django_filters.rest_framework.DjangoFilterBackend"
+    ]
+}
 
 # Database
 

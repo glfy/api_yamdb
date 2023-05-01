@@ -1,5 +1,4 @@
 from django.contrib.auth.models import AbstractUser
-from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.dispatch import receiver
 from django.contrib.auth.tokens import default_token_generator
