@@ -9,6 +9,8 @@ from api.views import (
     UserViewSet,
     ReviewViewSet,
     CommentViewSet,
+    register,
+    get_jwt_token,
 )
 
 app_name = 'api'
@@ -28,7 +30,7 @@ router_v1.register(
 )
 
 urlpatterns = [
-    path('v1/', include('djoser.urls.jwt')),
-    path('v1/', include('djoser.urls')),
+    path('v1/auth/signup/', register, name='register'),
+    path('v1/auth/token/', get_jwt_token, name='token'),
     path("v1/", include(router_v1.urls)),
 ]
