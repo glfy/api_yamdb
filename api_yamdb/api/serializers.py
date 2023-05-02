@@ -72,7 +72,6 @@ class UserSerializer(serializers.ModelSerializer):
             "bio",
             "role",
         )
->>>>>>> 642c0042ff7db187b170eb471443adf2c8ecde97
         model = User
 
 
