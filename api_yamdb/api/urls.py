@@ -11,11 +11,11 @@ from .views import (
     UserViewSet,
     ReviewViewSet,
     CommentViewSet,
-    #register,
-   # get_jwt_token,
+    # register,
+    # get_jwt_token,
 )
 
-app_name = 'api'
+app_name = "api"
 
 router_v1 = DefaultRouter()
 router_v1.register(r"genres", GenreViewSet, basename="genres")
@@ -32,7 +32,7 @@ router_v1.register(
 )
 
 urlpatterns = [
-    path('v1/auth/signup/', APISignUp.as_view(), name='signup'),
-    path('v1/auth/token/', APIGetToken.as_view(), name='get_token'),
-    path("v1/", include(router_v1.urls))
+    path("v1/auth/signup/", APISignUp.as_view(), name="signup"),
+    path("v1/auth/token/", APIGetToken.as_view(), name="get_token"),
+    path("v1/", include(router_v1.urls)),
 ]
