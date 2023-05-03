@@ -22,6 +22,11 @@
 
    ```bash
    python3 manage.py migrate
+   
+5. Добавить тестовые данные в бд:
+
+   ```bash
+   python3 manage.py import_csv
 
 5. Запустить проект:
 
