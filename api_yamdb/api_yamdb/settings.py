@@ -6,16 +6,12 @@ from datetime import timedelta
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = "p&l%385148kslhtyn^##a1)ilz@4zqj=rq&agdol^##zgl9(vs"
 
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
-
-# Application definition
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -24,10 +20,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-
     "rest_framework",
-    'rest_framework_simplejwt',
-
+    "rest_framework_simplejwt",
     "api",
     "reviews",
     "django_filters",
@@ -70,7 +64,6 @@ REST_FRAMEWORK = {
     ]
 }
 
-# Database
 
 DATABASES = {
     "default": {
@@ -81,7 +74,6 @@ DATABASES = {
 
 AUTH_USER_MODEL = "reviews.User"
 
-# Password validation
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -99,8 +91,6 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# Internationalization
-
 LANGUAGE_CODE = "en-us"
 
 TIME_ZONE = "UTC"
@@ -112,29 +102,28 @@ USE_L10N = True
 USE_TZ = True
 
 REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
     ],
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
-    'AUTH_HEADER_TYPES': ('Bearer',),
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
+    "AUTH_HEADER_TYPES": ("Bearer",),
 }
 
-# Static files (CSS, JavaScript, Images)
 
 STATIC_URL = "/static/"
 
 
 STATICFILES_DIRS = ((BASE_DIR / "static/"),)
-    
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_USE_TLS = True
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'XXXXXX'
-EMAIL_HOST_PASSWORD = 'XXXXXX'
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_HOST_USER = "XXXXXX"
+EMAIL_HOST_PASSWORD = "XXXXXX"
 EMAIL_PORT = 587

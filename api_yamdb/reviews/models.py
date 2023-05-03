@@ -7,9 +7,9 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 
 
 class User(AbstractUser):
-    USER = 'user'
-    ADMIN = 'admin'
-    MODERATOR = 'moderator'
+    USER = "user"
+    ADMIN = "admin"
+    MODERATOR = "moderator"
     ROLES = [
         (ADMIN, "Administrator"),
         (MODERATOR, "Moderator"),
@@ -49,7 +49,6 @@ class User(AbstractUser):
     class Meta:
         verbose_name = "Пользователи"
 
-        # constraints = []
         def __str__(self):
             return self.username
 
@@ -81,9 +80,7 @@ class Title(models.Model):
         Category, on_delete=models.CASCADE, related_name="categories"
     )
     rating = models.IntegerField(
-        verbose_name='Рейтинг',
-        null=True,
-        default=None
+        verbose_name="Рейтинг", null=True, default=None
     )
 
     class Meta:
@@ -103,11 +100,12 @@ class Review(models.Model):
         auto_now_add=True, verbose_name="Дата публикации отзыва"
     )
     score = models.IntegerField(
-        verbose_name='Рейтинг',
+        verbose_name="Рейтинг",
         validators=[
-            MinValueValidator(1, 'Допустимы значения от 1 до 10'),
-            MaxValueValidator(10, 'Допустимы значения от 1 до 10')
-        ])
+            MinValueValidator(1, "Допустимы значения от 1 до 10"),
+            MaxValueValidator(10, "Допустимы значения от 1 до 10"),
+        ],
+    )
     title = models.ForeignKey(
         Title,
         on_delete=models.CASCADE,
@@ -122,8 +120,8 @@ class Review(models.Model):
         verbose_name_plural = "Отзывы"
         constraints = [
             models.UniqueConstraint(
-                fields=['author', 'title'],
-                name='unique follow',
+                fields=["author", "title"],
+                name="unique follow",
             )
         ]
         ordering = ("-pub_date",)

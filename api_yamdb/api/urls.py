@@ -11,8 +11,8 @@ from .views import (
     UserViewSet,
     ReviewViewSet,
     CommentViewSet,
-    register,
-    get_jwt_token,
+    #register,
+   # get_jwt_token,
 )
 
 app_name = 'api'
