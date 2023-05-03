@@ -61,6 +61,9 @@ class Category(models.Model):
         verbose_name = "Категория"
         verbose_name_plural = "Категории"
 
+    def __str__(self):
+        return f"{self.name} {self.name}"
+
 
 class Genre(models.Model):
     name = models.CharField(max_length=256)
@@ -70,14 +73,21 @@ class Genre(models.Model):
         verbose_name = "Жанр"
         verbose_name_plural = "Жанры"
 
+    def __str__(self):
+        return f"{self.name} {self.name}"
+
 
 class Title(models.Model):
     name = models.CharField(max_length=256)
     year = models.IntegerField()
-    description = models.TextField(blank=True)
+    description = models.TextField(max_length=256, blank=True)
     genre = models.ManyToManyField(Genre, related_name="genre")
     category = models.ForeignKey(
-        Category, on_delete=models.CASCADE, related_name="categories"
+        Category,
+        on_delete=models.SET_NULL,
+        related_name="categories",
+        null=True,
+        blank=True,
     )
     rating = models.IntegerField(
         verbose_name="Рейтинг", null=True, default=None
@@ -86,6 +96,9 @@ class Title(models.Model):
     class Meta:
         verbose_name = "Заголовок"
         verbose_name_plural = "Заголовки"
+
+    def __str__(self):
+        return self.name
 
 
 class Review(models.Model):
@@ -111,8 +124,6 @@ class Review(models.Model):
         on_delete=models.CASCADE,
         related_name="reviews",
         verbose_name="Название произведения",
-        blank=True,
-        null=True,
     )
 
     class Meta:
@@ -126,12 +137,15 @@ class Review(models.Model):
         ]
         ordering = ("-pub_date",)
 
+    def __str__(self):
+        return self.text
+
 
 class Comment(models.Model):
     review = models.ForeignKey(
         Review, on_delete=models.CASCADE, related_name="comments"
     )
-    text = models.TextField()
+    text = models.CharField(max_length=200)
     author = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="comments"
     )
@@ -142,3 +156,6 @@ class Comment(models.Model):
     class Meta:
         verbose_name = "Комментарий"
         verbose_name_plural = "Комментарии"
+
+    def __str__(self):
+        return self.text

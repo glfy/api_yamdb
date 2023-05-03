@@ -128,9 +128,12 @@ class TitleViewSet(viewsets.ModelViewSet):
     search_fields = [
         "name",
     ]
+    #lookup_field = "slug"
 
     def get_queryset(self):
-        queryset = Title.objects.all().annotate(Avg("reviews__rate"))
+        queryset = Title.objects.all().annotate(Avg("reviews__score"))
+
+        # queryset = Title.objects.all().annotate(Avg("reviews__rate"))
 
         return queryset
 
@@ -166,7 +169,6 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
-
     permission_classes = [
         AdminModeratorAuthorOrReadOnly,
     ]
