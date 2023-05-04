@@ -8,15 +8,16 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework_simplejwt.tokens import RefreshToken
-
+from rest_framework_simplejwt.tokens import AccessToken
+from django.db import IntegrityError
+from rest_framework.exceptions import ValidationError
 from django.contrib.auth.tokens import (
     default_token_generator,
 )
 from django.core.mail import EmailMessage
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404
-
+from django.core.mail import send_mail
 from api.permissions import (
     AdminModeratorAuthorOrReadOnly,
     AdminOnly,
@@ -63,33 +64,39 @@ class APISignUp(APIView):
     def post(self, request):
         serializer = SignUpSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        user = serializer.save()
+        try:
+            user, created = User.objects.get_or_create(
+            email=serializer.validated_data['email'],
+            username=serializer.validated_data['username'],
+        )
+        except IntegrityError as error:
+            raise ValidationError('Неуникальное поле. Пользователь с таким уже существует')
+        user = get_object_or_404(
+            User,
+            username=serializer.validated_data["username"]
+        )
         token = default_token_generator.make_token(user)
-        email = EmailMessage(
-            subject="Confirmation code",
-            body=f"Your confirmation code:{token}",
-            to=[user.email],
+        send_mail(
+            subject="YaMDb registration",
+            message=f"Your confirmation code: {token}",
+            from_email=None,
+            recipient_list=[user.email],
         )
 
-        email.send()
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class APIGetToken(APIView):
+    permission_classes = (permissions.AllowAny,)
+
     def post(self, request):
         serializer = GetTokenSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
+        user = get_object_or_404(User, )
         confirmation_code = data.get("confirmation_code")
-        try:
-            user = User.objects.get(username=data["username"])
-        except User.DoesNotExist:
-            return Response(
-                {"username": "Пользователь не найден!"},
-                status=status.HTTP_404_NOT_FOUND,
-            )
         if default_token_generator.check_token(user, confirmation_code):
-            token = RefreshToken.for_user(user).access_token
+            token = AccessToken.for_user(user)
             return Response(
                 {"token": str(token)}, status=status.HTTP_201_CREATED
             )

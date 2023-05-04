@@ -35,14 +35,11 @@ class UsersSerializer(serializers.ModelSerializer):
 
 class SignUpSerializer(serializers.ModelSerializer):
     username = serializers.RegexField(
-        validators=[validate_username,
-                    UniqueValidator(queryset=User.objects.all()),],
         regex=r"^[\w.@+-]",
         max_length=150
     )
     email = serializers.EmailField(
         max_length=254,
-        validators=[UniqueValidator(queryset=User.objects.all()), ]
     )
 
     class Meta:
