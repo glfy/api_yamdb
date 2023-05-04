@@ -1,9 +1,9 @@
 from rest_framework import serializers
-from rest_framework.validators import UniqueValidator
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import get_object_or_404
+from rest_framework.validators import UniqueValidator
 
-from reviews.models import User, Category, Genre, Title, Comment, Review
+from reviews.models import Category, Comment, Genre, Review, Title, User
 
 
 class UsersSerializer(serializers.ModelSerializer):
@@ -114,7 +114,6 @@ class TitleSerializer(serializers.ModelSerializer):
     category = serializers.SlugRelatedField(
         slug_field="slug", queryset=Category.objects.all()
     )
-    #rating = serializers.IntegerField(read_only=True, initial=0)
 
     class Meta:
         model = Title
