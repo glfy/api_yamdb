@@ -1,7 +1,9 @@
 import csv
 import datetime
+
 from django.core.management.base import BaseCommand
-from reviews.models import User, Category, Genre, Title, Review, Comment
+
+from reviews.models import Category, Comment, Genre, Review, Title, User
 
 
 def parse_date(date_string):
@@ -100,71 +102,3 @@ class Command(BaseCommand):
                     pub_date=parse_date(row["pub_date"]),
                 )
         self.stdout.write(self.style.SUCCESS("Data imported successfully"))
-
-        
-
-"""import csv
-
-from django.conf import settings
-from django.core.management import BaseCommand
-
-from reviews.models import Category, Comment, Genre, Review, Title, User
-
-TABLES = {
-    User: "users.csv",
-    Category: "category.csv",
-    Title: "titles.csv",
-    Genre: "genre.csv",
-
-
-
-
-    # Review: "review.csv",
-    Genre: "genre.csv",
-    Comment: "comments.csv",
-}
-
-
-class Command(BaseCommand):
-    def handle(self, *args, **kwargs):
-        for model, csv_f in TABLES.items():
-            with open(
-                "static/data/users.csv", newline="", encoding="utf-8"
-            ) as csvfile:
-                reader = csv.DictReader(csvfile)
-                for row in reader:
-                    user, created = User.objects.update_or_create(
-                        id=row["id"],
-                        defaults={
-                            "username": row["username"],
-                            "email": row["email"],
-                            "role": row["role"],
-                            "bio": row["bio"],
-                            "first_name": row["first_name"],
-                            "last_name": row["last_name"],
-                        },
-                    )
-            with open("static/data/review.csv", "r") as csvfile:
-                reader = csv.DictReader(csvfile)
-                for row in reader:
-                    user = User.objects.get(
-                        id=int(row["author"])
-                    )  # Fetch the User instance with the provided id
-                    review = Review(
-                        title_id=row["title"],
-                        text=row["text"],
-                        author=user,  # Assign the User instance to the author field
-                        score=row["score"],
-                        pub_date=row["pub_date"],
-                    )
-                    review.save()
-
-            with open(
-                f"{settings.BASE_DIR}/static/data/{csv_f}",
-                "r",
-                encoding="utf-8",
-            ) as csv_file:
-                reader = csv.DictReader(csv_file)
-                model.objects.bulk_create(model(**data) for data in reader)
-        self.stdout.write(self.style.SUCCESS("Все данные загружены"))
-"""
