@@ -4,7 +4,7 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.validators import UniqueValidator
 
 from reviews.models import Category, Comment, Genre, Review, Title, User
-from reviews.validators import validate_username
+
 
 class UsersSerializer(serializers.ModelSerializer):
     class Meta:
@@ -62,9 +62,13 @@ class NotAdminSerializer(serializers.ModelSerializer):
 
 
 class GetTokenSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(required=True,
-                                     max_length=150,
-                                     validators=[UniqueValidator(queryset=User.objects.all())])
+    username = serializers.CharField(
+        required=True,
+        max_length=150,
+        validators=[
+            UniqueValidator(queryset=User.objects.all())
+        ]
+    )
     confirmation_code = serializers.CharField(required=True)
 
     class Meta:
