@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from .validators import validate_username
 
 
 class User(AbstractUser):
@@ -15,7 +16,12 @@ class User(AbstractUser):
     first_name = models.CharField(max_length=150, null=True)
     last_name = models.CharField(max_length=150, null=True)
     username = models.CharField(
-        "Имя пользователя", max_length=150, null=True, unique=True
+        "Имя пользователя",
+        max_length=150,
+        null=True,
+        unique=True,
+        validators=[validate_username,]
+
     )
     email = models.EmailField(
         "Электронная почта",
