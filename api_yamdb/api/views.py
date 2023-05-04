@@ -9,6 +9,9 @@ from rest_framework import permissions, status
 from django.contrib.auth.tokens import default_token_generator
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.pagination import LimitOffsetPagination
+
 
 from rest_framework import viewsets, filters
 from reviews.models import Genre, Category, Title, User, Review, Comment
@@ -21,6 +24,7 @@ from .serializers import (
     CommentSerializer,
     GenreSerializer,
     ReviewSerializer,
+    TitleReadSerializer,
     TitleSerializer,
     UserSerializer,
     SignUpSerializer,
@@ -106,6 +110,7 @@ class GenreViewSet(viewsets.ModelViewSet):
         "name",
     ]
     lookup_field = "slug"
+    pagination_class = LimitOffsetPagination
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
@@ -118,24 +123,34 @@ class CategoryViewSet(viewsets.ModelViewSet):
         "name",
     ]
     lookup_field = "slug"
+    pagination_class = LimitOffsetPagination
 
 
 class TitleViewSet(viewsets.ModelViewSet):
-    serializer_class = TitleSerializer
+    queryset = Title.objects.annotate(rating=Avg("reviews__score")).all()
+    # serializer_class = TitleSerializer
     permission_classes = (AdminOrReadOnly,)
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     filterset_fields = ["category__slug", "genre__slug", "name", "year"]
     search_fields = [
         "name",
     ]
-    #lookup_field = "slug"
+    pagination_class = LimitOffsetPagination
 
-    def get_queryset(self):
-        queryset = Title.objects.all().annotate(Avg("reviews__score"))
+    def get_serializer_class(self):
+        if self.action in ["list", "retrieve"]:
+            return TitleReadSerializer
+        return TitleSerializer
+        # return super().get_serializer_class()
 
-        # queryset = Title.objects.all().annotate(Avg("reviews__rate"))
 
-        return queryset
+# def get_queryset(self):
+#    queryset = Title.objects.prefetch_related("reviews").annotate(
+##  )
+
+# queryset = Title.objects.all().annotate(Avg("reviews__rate"))
+
+#   return queryset
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -145,7 +160,7 @@ class UserViewSet(viewsets.ModelViewSet):
         IsAuthenticated,
         AdminOnly,
     )
-
+    pagination_class = PageNumberPagination
     filter_backends = [filters.SearchFilter]
     search_fields = [
         "username",
@@ -157,6 +172,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
     permission_classes = [
         AdminModeratorAuthorOrReadOnly,
     ]
+    pagination_class = PageNumberPagination
 
     def get_queryset(self):
         title = get_object_or_404(Title, id=self.kwargs.get("title_id"))
@@ -172,6 +188,7 @@ class CommentViewSet(viewsets.ModelViewSet):
     permission_classes = [
         AdminModeratorAuthorOrReadOnly,
     ]
+    pagination_class = PageNumberPagination
 
     def get_queryset(self):
         review = get_object_or_404(Review, id=self.kwargs.get("review_id"))

@@ -85,16 +85,26 @@ class UserSerializer(serializers.ModelSerializer):
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
-        fields = "__all__"
+        exclude = ("id",)
         model = Category
         lookup_field = "slug"
 
 
 class GenreSerializer(serializers.ModelSerializer):
     class Meta:
+        exclude = ("id",)
         model = Genre
-        fields = "__all__"
         lookup_field = "slug"
+
+
+class TitleReadSerializer(serializers.ModelSerializer):
+    rating = serializers.IntegerField(read_only=True)
+    genre = GenreSerializer(many=True, read_only=True)
+    category = CategorySerializer(read_only=True)
+
+    class Meta:
+        model = Title
+        fields = "__all__"
 
 
 class TitleSerializer(serializers.ModelSerializer):
@@ -104,7 +114,7 @@ class TitleSerializer(serializers.ModelSerializer):
     category = serializers.SlugRelatedField(
         slug_field="slug", queryset=Category.objects.all()
     )
-    #rating = serializers.IntegerField(read_only=True)
+    #rating = serializers.IntegerField(read_only=True, initial=0)
 
     class Meta:
         model = Title
@@ -153,23 +163,3 @@ class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Review
         fields = "__all__"
-
-
-class TitleReadSerializer(serializers.ModelSerializer):
-    rating = serializers.IntegerField(
-        source="reviews__score__avg", read_only=True
-    )
-    genre = GenreSerializer(many=True, read_only=True)
-    category = CategorySerializer(read_only=True)
-
-    class Meta:
-        model = Title
-        fields = (
-            "id",
-            "name",
-            "year",
-            "rating",
-            "description",
-            "genre",
-            "category",
-        )

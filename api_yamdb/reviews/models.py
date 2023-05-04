@@ -85,13 +85,13 @@ class Title(models.Model):
     category = models.ForeignKey(
         Category,
         on_delete=models.SET_NULL,
-        related_name="categories",
+        related_name="titles",
         null=True,
         blank=True,
     )
-    rating = models.IntegerField(
-        verbose_name="Рейтинг", null=True, default=None
-    )
+    #rating = models.IntegerField(
+    #    verbose_name="Рейтинг", null=True, default=None
+    #)
 
     class Meta:
         verbose_name = "Заголовок"
