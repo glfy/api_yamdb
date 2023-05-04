@@ -4,7 +4,7 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.validators import UniqueValidator
 
 from reviews.models import Category, Comment, Genre, Review, Title, User
-
+from reviews.validators import validate_username
 
 class UsersSerializer(serializers.ModelSerializer):
     class Meta:
@@ -34,6 +34,17 @@ class UsersSerializer(serializers.ModelSerializer):
 
 
 class SignUpSerializer(serializers.ModelSerializer):
+    username = serializers.RegexField(
+        validators=[validate_username,
+                    UniqueValidator(queryset=User.objects.all()),],
+        regex=r"^[\w.@+-]",
+        max_length=150
+    )
+    email = serializers.EmailField(
+        max_length=254,
+        validators=[UniqueValidator(queryset=User.objects.all()), ]
+    )
+
     class Meta:
         model = User
         fields = ("email", "username")
@@ -54,7 +65,9 @@ class NotAdminSerializer(serializers.ModelSerializer):
 
 
 class GetTokenSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(required=True)
+    username = serializers.CharField(required=True,
+                                     max_length=150,
+                                     validators=[UniqueValidator(queryset=User.objects.all())])
     confirmation_code = serializers.CharField(required=True)
 
     class Meta:
@@ -63,12 +76,10 @@ class GetTokenSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(
+    username = serializers.RegexField(
         validators=[UniqueValidator(queryset=User.objects.all())],
-        required=True,
-    )
-    email = serializers.EmailField(
-        validators=[UniqueValidator(queryset=User.objects.all())]
+        regex=r"^[\w.@+-]",
+        max_length=150
     )
 
     class Meta:

@@ -4,6 +4,7 @@ from rest_framework.pagination import (
     LimitOffsetPagination,
     PageNumberPagination,
 )
+from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -36,6 +37,7 @@ from .serializers import (
     TitleSerializer,
     UserSerializer,
     UsersSerializer,
+    NotAdminSerializer
 )
 
 
@@ -151,6 +153,30 @@ class UserViewSet(viewsets.ModelViewSet):
     search_fields = [
         "username",
     ]
+    lookup_field = 'username'
+    http_method_names = ['get', 'post', 'patch', 'delete']
+    @action(
+        methods=['GET', 'PATCH'],
+        detail=False,
+        permission_classes=(IsAuthenticated,),
+        url_path='me')
+    def get_current_user_info(self, request):
+        serializer = UsersSerializer(request.user)
+        if request.method == 'PATCH':
+            if request.user.is_admin:
+                serializer = UsersSerializer(
+                    request.user,
+                    data=request.data,
+                    partial=True)
+            else:
+                serializer = NotAdminSerializer(
+                    request.user,
+                    data=request.data,
+                    partial=True)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.data)
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
