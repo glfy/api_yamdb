@@ -1,4 +1,12 @@
 from django_filters.rest_framework import DjangoFilterBackend
+from django.db import IntegrityError
+from django.contrib.auth.tokens import (
+    default_token_generator,
+)
+from django.core.mail import EmailMessage
+from django.db.models import Avg
+from django.shortcuts import get_object_or_404
+
 from rest_framework import filters, permissions, status, viewsets
 from rest_framework.pagination import (
     LimitOffsetPagination,
@@ -9,22 +17,14 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import AccessToken
-from django.db import IntegrityError
 from rest_framework.exceptions import ValidationError
-from django.contrib.auth.tokens import (
-    default_token_generator,
-)
-from django.core.mail import EmailMessage
-from django.db.models import Avg
-from django.shortcuts import get_object_or_404
-from django.core.mail import send_mail
+
 from api.permissions import (
     AdminModeratorAuthorOrReadOnly,
     AdminOnly,
     AdminOrReadOnly,
 )
 from reviews.models import Category, Genre, Review, Title, User
-
 from .filters import TitleFilter
 from .mixins import CreateDestroyListMixinSet
 from .serializers import (
@@ -43,7 +43,7 @@ from .serializers import (
 
 
 class UpdateUserAPIView(APIView):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = [IsAuthenticated,]
 
     def patch(self, request):
         user = request.user
@@ -59,35 +59,37 @@ class UpdateUserAPIView(APIView):
 
 
 class APISignUp(APIView):
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = [permissions.AllowAny,]
 
     def post(self, request):
         serializer = SignUpSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         try:
-            user, created = User.objects.get_or_create(
-            email=serializer.validated_data['email'],
-            username=serializer.validated_data['username'],
-        )
-        except IntegrityError as error:
-            raise ValidationError('Неуникальное поле. Пользователь с таким уже существует')
+            user = User.objects.get_or_create(
+                email=serializer.validated_data['email'],
+                username=serializer.validated_data['username'],
+            )
+        except IntegrityError:
+            raise ValidationError('Неуникальное поле.'
+                                  'Пользователь с таким уже существует')
         user = get_object_or_404(
             User,
             username=serializer.validated_data["username"]
         )
         token = default_token_generator.make_token(user)
-        send_mail(
-            subject="YaMDb registration",
-            message=f"Your confirmation code: {token}",
-            from_email=None,
-            recipient_list=[user.email],
+        email = EmailMessage(
+            subject='Confirmation code',
+            body=f'Your confirmation code:{token}',
+            to=[user.email]
         )
+
+        email.send()
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class APIGetToken(APIView):
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = [permissions.AllowAny,]
 
     def post(self, request):
         serializer = GetTokenSerializer(data=request.data)
@@ -108,7 +110,7 @@ class APIGetToken(APIView):
 
 class GenreViewSet(CreateDestroyListMixinSet):
     serializer_class = GenreSerializer
-    permission_classes = (AdminOrReadOnly,)
+    permission_classes = [AdminOrReadOnly,]
     queryset = Genre.objects.all()
 
     filter_backends = [filters.SearchFilter]
@@ -121,7 +123,7 @@ class GenreViewSet(CreateDestroyListMixinSet):
 
 class CategoryViewSet(CreateDestroyListMixinSet):
     serializer_class = CategorySerializer
-    permission_classes = (AdminOrReadOnly,)
+    permission_classes = [AdminOrReadOnly,]
     queryset = Category.objects.all()
 
     filter_backends = [filters.SearchFilter]
@@ -134,7 +136,7 @@ class CategoryViewSet(CreateDestroyListMixinSet):
 
 class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.annotate(rating=Avg("reviews__score")).all()
-    permission_classes = (AdminOrReadOnly,)
+    permission_classes = [AdminOrReadOnly,]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     filterset_class = TitleFilter
     search_fields = [
@@ -151,10 +153,10 @@ class TitleViewSet(viewsets.ModelViewSet):
 class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     queryset = User.objects.all()
-    permission_classes = (
+    permission_classes = [
         IsAuthenticated,
         AdminOnly,
-    )
+    ]
     pagination_class = PageNumberPagination
     filter_backends = [filters.SearchFilter]
     search_fields = [
@@ -162,10 +164,11 @@ class UserViewSet(viewsets.ModelViewSet):
     ]
     lookup_field = 'username'
     http_method_names = ['get', 'post', 'patch', 'delete']
+
     @action(
         methods=['GET', 'PATCH'],
         detail=False,
-        permission_classes=(IsAuthenticated,),
+        permission_classes=[IsAuthenticated,],
         url_path='me')
     def get_current_user_info(self, request):
         serializer = UsersSerializer(request.user)

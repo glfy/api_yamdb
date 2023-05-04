@@ -1,7 +1,7 @@
+from django.core.management.base import BaseCommand
+
 import csv
 import datetime
-
-from django.core.management.base import BaseCommand
 
 from reviews.models import Category, Comment, Genre, Review, Title, User
 
@@ -33,7 +33,7 @@ class Command(BaseCommand):
                 if not created:
                     self.stdout.write(
                         self.style.WARNING(
-                            f"""User with id {row['id']} already exists. 
+                            f"""User with id {row['id']} already exists.
                             Skipping."""
                         )
                     )
