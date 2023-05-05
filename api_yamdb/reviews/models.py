@@ -9,10 +9,12 @@ class User(AbstractUser):
     USER = "user"
     ADMIN = "admin"
     MODERATOR = "moderator"
+    SUPERUSER = "superuser"
     ROLES = [
         (ADMIN, "Administrator"),
         (MODERATOR, "Moderator"),
         (USER, "User"),
+        (SUPERUSER, "Administrator")
     ]
     first_name = models.CharField(max_length=150, null=True)
     last_name = models.CharField(max_length=150, null=True)
@@ -49,6 +51,7 @@ class User(AbstractUser):
     @property
     def is_admin(self):
         return self.role == self.ADMIN
+
 
     class Meta:
         verbose_name = "Пользователи"
