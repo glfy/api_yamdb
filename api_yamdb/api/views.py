@@ -2,7 +2,10 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, permissions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
-from rest_framework.pagination import LimitOffsetPagination, PageNumberPagination
+from rest_framework.pagination import (
+    LimitOffsetPagination,
+    PageNumberPagination,
+)
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -14,14 +17,27 @@ from django.db import IntegrityError
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 
-from api.permissions import AdminModeratorAuthorOrReadOnly, AdminOnly, AdminOrReadOnly
+from api.permissions import (
+    AdminModeratorAuthorOrReadOnly,
+    AdminOnly,
+    AdminOrReadOnly,
+)
 from reviews.models import Category, Genre, Review, Title, User
 
 from .filters import TitleFilter
 from .mixins import CreateDestroyListMixinSet
 from .serializers import (
-    CategorySerializer, CommentSerializer, GenreSerializer, GetTokenSerializer, NotAdminSerializer, ReviewSerializer,
-    SignUpSerializer, TitleReadSerializer, TitleSerializer, UserSerializer, UsersSerializer,
+    CategorySerializer,
+    CommentSerializer,
+    GenreSerializer,
+    GetTokenSerializer,
+    NotAdminSerializer,
+    ReviewSerializer,
+    SignUpSerializer,
+    TitleReadSerializer,
+    TitleSerializer,
+    UserSerializer,
+    UsersSerializer,
 )
 
 

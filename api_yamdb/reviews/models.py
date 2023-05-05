@@ -21,8 +21,9 @@ class User(AbstractUser):
         max_length=150,
         null=True,
         unique=True,
-        validators=[validate_username,]
-
+        validators=[
+            validate_username,
+        ],
     )
     email = models.EmailField(
         "Электронная почта",
@@ -55,7 +56,7 @@ class User(AbstractUser):
         constraints = [
             models.CheckConstraint(
                 check=~models.Q(username__iexact="me"),
-                name="username_is_not_me"
+                name="username_is_not_me",
             )
         ]
 
