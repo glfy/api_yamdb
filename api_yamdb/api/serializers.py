@@ -161,7 +161,11 @@ class ReviewSerializer(serializers.ModelSerializer):
         slug_field="name",
     )
 
-    def validate(self, data):
+    class Meta:
+        model = Review
+        fields = ("title", "id", "text", "author", "pub_date", "score")
+
+     def validate(self, data):
         request = self.context["request"]
         author = request.user
         title_id = self.context["view"].kwargs.get("title_id")
@@ -173,7 +177,3 @@ class ReviewSerializer(serializers.ModelSerializer):
                     "одного отзыва на произведение"
                 )
         return data
-
-    class Meta:
-        model = Review
-        fields = ("title", "id", "text", "author", "pub_date", "score")
