@@ -17,16 +17,16 @@ from django.db import IntegrityError
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 
-from api.permissions import (
+from api.v1.permissions import (
     AdminModeratorAuthorOrReadOnly,
     AdminOnly,
     AdminOrReadOnly,
 )
-from reviews.models import Category, Genre, Review, Title, User
+from reviews.models import Category, Genre, Review, Title, User, Comment
 
-from .filters import TitleFilter
-from .mixins import CreateDestroyListMixinSet
-from .serializers import (
+from api.v1.filters import TitleFilter
+from api.v1.mixins import CreateDestroyListMixinSet
+from api.v1.serializers import (
     CategorySerializer,
     CommentSerializer,
     GenreSerializer,

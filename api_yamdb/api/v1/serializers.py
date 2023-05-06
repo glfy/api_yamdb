@@ -165,7 +165,7 @@ class ReviewSerializer(serializers.ModelSerializer):
         model = Review
         fields = ("title", "id", "text", "author", "pub_date", "score")
 
-     def validate(self, data):
+    def validate(self, data):
         request = self.context["request"]
         author = request.user
         title_id = self.context["view"].kwargs.get("title_id")
