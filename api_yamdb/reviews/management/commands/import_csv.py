@@ -13,7 +13,7 @@ def parse_date(date_string):
 class Command(BaseCommand):
     help = "Import CSV data to database"
 
-    def handle(self, *args, **options):
+    def load_users(self):
         with open(
             "static/data/users.csv", newline="", encoding="utf-8"
         ) as file:
@@ -38,6 +38,7 @@ class Command(BaseCommand):
                         )
                     )
 
+    def load_category(self):
         with open(
             "static/data/Category.csv", mode="r", encoding="utf-8"
         ) as file:
@@ -47,6 +48,7 @@ class Command(BaseCommand):
                     id=row["id"], name=row["name"], slug=row["slug"]
                 )
 
+    def load_genre(self):
         with open("static/data/Genre.csv", mode="r", encoding="utf-8") as file:
             csv_reader = csv.DictReader(file)
             for row in csv_reader:
@@ -54,18 +56,20 @@ class Command(BaseCommand):
                     id=row["id"], name=row["name"], slug=row["slug"]
                 )
 
+    def load_titles(self):
         with open(
             "static/data/titles.csv", mode="r", encoding="utf-8"
         ) as file:
             csv_reader = csv.DictReader(file)
             for row in csv_reader:
-                title = Title.objects.create(
+                Title.objects.create(
                     id=row["id"],
                     name=row["name"],
                     year=int(row["year"]),
                     category_id=row["category_id"],
                 )
 
+    def load_genre_title(self):
         with open(
             "static/data/genre_title.csv", mode="r", encoding="utf-8"
         ) as file:
@@ -75,6 +79,7 @@ class Command(BaseCommand):
                 genre = Genre.objects.get(id=row["genre"])
                 title.genre.add(genre)
 
+    def load_review(self):
         with open(
             "static/data/Review.csv", mode="r", encoding="utf-8"
         ) as file:
@@ -89,6 +94,7 @@ class Command(BaseCommand):
                     pub_date=parse_date(row["pub_date"]),
                 )
 
+    def load_comments(self):
         with open(
             "static/data/comments.csv", mode="r", encoding="utf-8"
         ) as file:
@@ -101,4 +107,13 @@ class Command(BaseCommand):
                     author_id=row["author"],
                     pub_date=parse_date(row["pub_date"]),
                 )
+
+    def handle(self, *args, **options):
+        self.load_users()
+        self.load_category()
+        self.load_genre()
+        self.load_titles()
+        self.load_genre_title()
+        self.load_review()
+        self.load_comments()
         self.stdout.write(self.style.SUCCESS("Data imported successfully"))

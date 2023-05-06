@@ -2,20 +2,21 @@ from django.contrib.auth.models import AbstractUser
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
-from .validators import validate_username
+from .validators import validate_username, validate_year
 
 
 class User(AbstractUser):
-    USER = "user"
-    ADMIN = "admin"
-    MODERATOR = "moderator"
-    ROLES = [
-        (ADMIN, "Administrator"),
-        (MODERATOR, "Moderator"),
-        (USER, "User"),
-    ]
-    first_name = models.CharField(max_length=150, null=True)
-    last_name = models.CharField(max_length=150, null=True)
+    class UserRole(models.TextChoices):
+        USER = "user", "User"
+        ADMIN = "admin", "Administrator"
+        MODERATOR = "moderator", "Moderator"
+
+    first_name = models.CharField(
+        max_length=150, null=True, verbose_name="Имя"
+    )
+    last_name = models.CharField(
+        max_length=150, null=True, verbose_name="Фамилия"
+    )
     username = models.CharField(
         "Имя пользователя",
         max_length=150,
@@ -39,17 +40,17 @@ class User(AbstractUser):
         "Роль пользователя",
         blank=True,
         max_length=100,
-        choices=ROLES,
-        default="user",
+        choices=UserRole.choices,
+        default=UserRole.USER,
     )
 
     @property
     def is_moderator(self):
-        return self.role == self.MODERATOR
+        return self.role == self.UserRole.MODERATOR
 
     @property
     def is_admin(self):
-        return self.role == self.ADMIN
+        return self.role == self.UserRole.ADMIN
 
     class Meta:
         verbose_name = "Пользователи"
@@ -65,8 +66,10 @@ class User(AbstractUser):
 
 
 class Category(models.Model):
-    name = models.CharField(max_length=256)
-    slug = models.SlugField(max_length=50, unique=True)
+    name = models.CharField(max_length=256, verbose_name="Название категории")
+    slug = models.SlugField(
+        max_length=50, unique=True, verbose_name="Слаг категории"
+    )
 
     class Meta:
         verbose_name = "Категория"
@@ -77,8 +80,10 @@ class Category(models.Model):
 
 
 class Genre(models.Model):
-    name = models.CharField(max_length=256)
-    slug = models.SlugField(max_length=50, unique=True)
+    name = models.CharField(max_length=256, verbose_name="Название жанра")
+    slug = models.SlugField(
+        max_length=50, unique=True, verbose_name="Слаг жанра"
+    )
 
     class Meta:
         verbose_name = "Жанр"
@@ -89,16 +94,25 @@ class Genre(models.Model):
 
 
 class Title(models.Model):
-    name = models.CharField(max_length=256)
-    year = models.IntegerField()
-    description = models.TextField(max_length=256, blank=True)
-    genre = models.ManyToManyField(Genre, related_name="genre")
+    name = models.CharField(
+        max_length=256, verbose_name="Название произведения"
+    )
+    year = models.PositiveIntegerField(
+        verbose_name="Год", validators=(validate_year,)
+    )
+    description = models.TextField(
+        max_length=256, blank=True, verbose_name="Описание произведения"
+    )
+    genre = models.ManyToManyField(
+        Genre, related_name="genre", verbose_name="Жанр"
+    )
     category = models.ForeignKey(
         Category,
         on_delete=models.SET_NULL,
         related_name="titles",
         null=True,
         blank=True,
+        verbose_name="Категория",
     )
 
     class Meta:
@@ -151,14 +165,21 @@ class Review(models.Model):
 
 class Comment(models.Model):
     review = models.ForeignKey(
-        Review, on_delete=models.CASCADE, related_name="comments"
+        Review,
+        on_delete=models.CASCADE,
+        related_name="comments",
+        verbose_name="Отзыв",
     )
-    text = models.CharField(max_length=200)
+    text = models.CharField(max_length=200, verbose_name="Текст комментария")
     author = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="comments"
+        User,
+        on_delete=models.CASCADE,
+        related_name="comments",
+        verbose_name="Автор комментария",
     )
     pub_date = models.DateTimeField(
-        "Дата публикации комментария", auto_now_add=True
+        "Дата публикации комментария",
+        auto_now_add=True,
     )
 
     class Meta:

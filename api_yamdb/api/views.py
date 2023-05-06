@@ -146,7 +146,13 @@ class CategoryViewSet(CreateDestroyListMixinSet):
 
 
 class TitleViewSet(viewsets.ModelViewSet):
-    queryset = Title.objects.annotate(rating=Avg("reviews__score")).all()
+    queryset = (
+        Title.objects
+        .select_related("category")
+        .prefetch_related("genre")
+        .annotate(rating=Avg("reviews__score"))
+        .all()
+    )
     permission_classes = [
         AdminOrReadOnly,
     ]
