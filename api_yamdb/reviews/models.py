@@ -134,7 +134,7 @@ class Review(models.Model):
     pub_date = models.DateTimeField(
         auto_now_add=True, verbose_name="Дата публикации отзыва"
     )
-    score = models.IntegerField(
+    score = models.PositiveSmallIntegerField(
         verbose_name="Рейтинг",
         validators=[
             MinValueValidator(1, "Допустимы значения от 1 до 10"),
@@ -154,7 +154,7 @@ class Review(models.Model):
         constraints = [
             models.UniqueConstraint(
                 fields=["author", "title"],
-                name="unique follow",
+                name="uq_author_title",
             )
         ]
         ordering = ("-pub_date",)
