@@ -11,4 +11,4 @@ class TitleFilter(rest_framework.FilterSet):
 
     class Meta:
         model = Title
-        fields = "__all__"
+        fields = ("category", "genre", "name", "year")

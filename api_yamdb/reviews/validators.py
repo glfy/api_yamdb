@@ -1,16 +1,23 @@
 import re
 
+from django.utils import timezone
 from django.core.exceptions import ValidationError
 
 
 def validate_username(value):
-    if value == 'me':
+    if value == "me":
         raise ValidationError(
-            ('Имя пользователя не может быть <me>.'),
-            params={'value': value},
+            ("Имя пользователя не может быть <me>."),
+            params={"value": value},
         )
-    if re.search(r'^[a-zA-Z][a-zA-Z0-9-_\.]{1,20}$', value) is None:
+    if re.search(r"^[a-zA-Z][a-zA-Z0-9-_\.]{1,20}$", value) is None:
         raise ValidationError(
-            (f'Не допустимые символы <{value}> в нике.'),
-            params={'value': value},
+            (f"Не допустимые символы <{value}> в нике."),
+            params={"value": value},
         )
+
+
+def validate_year(value):
+    now = timezone.now().year
+    if value > now:
+        raise ValidationError(f"{value} не может быть больше {now}")
