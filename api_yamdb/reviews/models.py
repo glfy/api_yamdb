@@ -50,7 +50,8 @@ class User(AbstractUser):
 
     @property
     def is_admin(self):
-        return self.role == self.ADMIN
+        return self.role == self.ADMIN \
+            or self.role == self.is_superuser
 
 
     class Meta:
