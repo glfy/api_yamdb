@@ -52,7 +52,6 @@ class User(AbstractUser):
     def is_admin(self):
         return self.role == self.UserRole.ADMIN
 
-
     class Meta:
         verbose_name = "Пользователи"
         constraints = [
